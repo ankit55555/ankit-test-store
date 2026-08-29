@@ -1,0 +1,232 @@
+{{ 'section-assignment-hero.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign fetch_priority = 'auto'
+  if section.index == 1
+    assign fetch_priority = 'high'
+  endif
+-%}
+
+{%- style -%}
+  #AssignmentHero-{{ section.id }} {
+    --assignment-hero-overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+  }
+{%- endstyle -%}
+
+<section
+  id="AssignmentHero-{{ section.id }}"
+  class="assignment-hero color-{{ section.settings.color_scheme }} gradient"
+  aria-label="{{ section.settings.accessibility_label | escape }}"
+>
+  <div class="assignment-hero__media">
+    {%- if section.settings.background_image != blank -%}
+      {{
+        section.settings.background_image
+        | image_url: width: 3840
+        | image_tag:
+          class: 'assignment-hero__image',
+          sizes: '100vw',
+          widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840',
+          fetchpriority: fetch_priority
+      }}
+    {%- else -%}
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'assignment-hero__placeholder' }}
+    {%- endif -%}
+    <div class="assignment-hero__overlay" aria-hidden="true"></div>
+    {%- if section.settings.enable_grain -%}
+      <div class="assignment-hero__grain" aria-hidden="true"></div>
+    {%- endif -%}
+  </div>
+
+  <div class="assignment-hero__content page-width">
+    <div class="assignment-hero__inner">
+      {%- if section.settings.headline_type == 'image' and section.settings.headline_image != blank -%}
+        {%- liquid
+          assign headline_alt = section.settings.headline_image.alt
+          if headline_alt == blank
+            assign headline_alt = section.settings.button_label
+          endif
+        -%}
+        <div class="assignment-hero__headline-image">
+          {{
+            section.settings.headline_image
+            | image_url: width: 1600
+            | image_tag:
+              class: 'assignment-hero__headline-img',
+              sizes: '(min-width: 990px) 720px, 90vw',
+              widths: '320, 480, 640, 960, 1200, 1600',
+              alt: headline_alt
+          }}
+        </div>
+      {%- elsif section.settings.headline_text != blank -%}
+        <h1 class="assignment-hero__headline assignment-hero__headline--single">
+          <span class="assignment-hero__headline-text">{{ section.settings.headline_text }}</span>
+          {%- if section.settings.show_headline_badge and section.settings.headline_badge != blank -%}
+            <span class="assignment-hero__badge">{{ section.settings.headline_badge | escape }}</span>
+          {%- endif -%}
+        </h1>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank -%}
+        <a
+          {% if section.settings.button_link == blank %}
+            role="link" aria-disabled="true"
+          {% else %}
+            href="{{ section.settings.button_link }}"
+          {% endif %}
+          class="assignment-hero__button assignment-cta-button button{% if section.settings.button_style_secondary %} button--secondary{% else %} button--primary{% endif %}"
+        >
+          {{ section.settings.button_label | escape }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if section.settings.show_reviews_tab -%}
+    <a
+      class="assignment-hero__reviews-tab"
+      {% if section.settings.reviews_tab_link == blank %}
+        role="link" aria-disabled="true"
+      {% else %}
+        href="{{ section.settings.reviews_tab_link }}"
+      {% endif %}
+    >
+      {{ section.settings.reviews_tab_label | escape }}
+    </a>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Assignment Hero",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "accessibility_label",
+      "label": "Accessibility label",
+      "default": "Hero banner"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Image overlay opacity",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_grain",
+      "label": "Film grain overlay",
+      "default": true,
+      "info": "Adds a subtle vintage grain over the hero photo, matching the Figma design."
+    },
+    {
+      "type": "header",
+      "content": "Headline"
+    },
+    {
+      "type": "select",
+      "id": "headline_type",
+      "label": "Headline type",
+      "options": [
+        { "value": "text", "label": "Text" },
+        { "value": "image", "label": "Image" }
+      ],
+      "default": "image",
+      "info": "Image recommended — export the Spring Break 84' lockup from Figma for an exact match."
+    },
+    {
+      "type": "image_picker",
+      "id": "headline_image",
+      "label": "Headline image",
+      "info": "Export the full Spring Break + 84' artwork from Figma (transparent PNG)."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline_text",
+      "label": "Headline text",
+      "default": "Spring Break",
+      "info": "Used when badge layout is off. For Figma fidelity, export the lockup as a headline image instead."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_headline_badge",
+      "label": "Show 84' badge on headline",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "headline_badge",
+      "label": "Headline badge",
+      "default": "84'"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "SHOP THE COLLECTION"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_style_secondary",
+      "label": "Use outline button style",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Reviews tab"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews_tab",
+      "label": "Show reviews tab",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "reviews_tab_label",
+      "label": "Reviews tab label",
+      "default": "Reviews"
+    },
+    {
+      "type": "url",
+      "id": "reviews_tab_link",
+      "label": "Reviews tab link"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "info": "Use Scheme 6 (Assignment Hero): white text, cyan button, white reviews tab.",
+      "default": "scheme-6"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Assignment Hero"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,203 @@
+.assignment-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56.25vw;
+  max-height: 90vh;
+  overflow: hidden;
+  isolation: isolate;
+  color: rgb(var(--color-foreground));
+}
+
+@media screen and (min-width: 990px) {
+  .assignment-hero {
+    height: 81rem;
+    min-height: 81rem;
+    max-height: 81rem;
+  }
+}
+
+.assignment-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.assignment-hero__image,
+.assignment-hero__placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.assignment-hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgb(var(--color-background));
+  opacity: var(--assignment-hero-overlay, 0);
+  pointer-events: none;
+}
+
+.assignment-hero__grain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.28;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+.assignment-hero__content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 4rem 1.5rem;
+}
+
+.assignment-hero__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--assignment-gap-headline-cta);
+  max-width: 90rem;
+  margin: 0 auto;
+}
+
+.assignment-hero__headline--single {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  color: rgb(var(--color-foreground));
+  white-space: nowrap;
+}
+
+.assignment-hero__headline-text {
+  display: inline;
+}
+
+.assignment-hero__badge {
+  position: absolute;
+  top: 0.2rem;
+  left: 58%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 1rem;
+  font-family: var(--assignment-font-serif);
+  font-size: 0.22em;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgb(var(--color-foreground));
+  border: 0.1rem solid rgb(var(--color-foreground));
+  border-radius: 999px;
+  transform: rotate(-12deg);
+  white-space: nowrap;
+}
+
+.assignment-hero__headline-image {
+  max-width: min(78rem, 94vw);
+  line-height: 0;
+  margin: 0;
+}
+
+.assignment-hero__headline-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.assignment-hero__button.assignment-cta-button {
+  width: auto;
+  min-width: auto;
+}
+
+.assignment-hero__button.button--secondary {
+  color: rgb(var(--color-secondary-button-text));
+  background-color: transparent;
+  border: 0.1rem solid rgb(var(--color-secondary-button-text));
+}
+
+.assignment-hero__reviews-tab {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  z-index: 4;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 1.6rem 1rem;
+  font-weight: 500;
+  letter-spacing: var(--assignment-tracking-tab);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--assignment-color-black);
+  background: var(--assignment-color-white);
+  border: none;
+  border-radius: var(--assignment-button-radius);
+  transition: opacity 0.2s ease;
+}
+
+.assignment-hero__reviews-tab:hover,
+.assignment-hero__reviews-tab:focus-visible {
+  opacity: 0.85;
+}
+
+.assignment-hero__reviews-tab:focus-visible {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: 0.2rem;
+}
+
+@media screen and (max-width: 749px) {
+  .assignment-hero {
+    min-height: 60vh;
+    height: auto;
+    max-height: none;
+  }
+
+  .assignment-hero__inner {
+    gap: var(--assignment-gap-headline-cta);
+  }
+
+  .assignment-hero__headline--single {
+    font-size: var(--assignment-type-serif-hero-mobile);
+    white-space: normal;
+    text-wrap: balance;
+  }
+
+  .assignment-hero__badge {
+    left: 52%;
+    font-size: 0.24em;
+  }
+
+  .assignment-hero__reviews-tab {
+    top: auto;
+    bottom: 2rem;
+    right: 1.5rem;
+    transform: none;
+    writing-mode: horizontal-tb;
+    border-radius: 999px;
+    padding: 0.8rem 1.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assignment-hero__reviews-tab {
+    transition: none;
+  }
+
+  .assignment-hero__grain {
+    display: none;
+  }
+}

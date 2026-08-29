@@ -1,0 +1,290 @@
+/* Assignment — shared design tokens & typography utilities */
+
+:root {
+  /* Font families (Figma → Google Fonts) */
+  --assignment-font-display: 'Cormorant Garamond', 'Bodoni Moda', 'Didot', 'Bodoni MT', Georgia, serif;
+  --assignment-font-serif: 'Bodoni Moda', 'Didot', 'Bodoni MT', Georgia, serif;
+  --assignment-font-script: 'Allura', 'Brush Script MT', cursive;
+  --assignment-font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Colors */
+  --assignment-color-brown: #421b02;
+  --assignment-color-brown-panel: #3c2415;
+  --assignment-color-brown-deep: #2a1810;
+  --assignment-color-mint: #c0ffef;
+  --assignment-color-mint-hover: #a8f8e8;
+  --assignment-color-hero-mint: #d1feff;
+  --assignment-color-white: #ffffff;
+  --assignment-color-black: #121212;
+  --assignment-color-error: #b00020;
+
+  /* Layout */
+  --assignment-section-padding: 2.4rem;
+  --assignment-panel-gap: 1.2rem;
+  --assignment-panel-radius: 1.6rem;
+  --assignment-button-radius: 0;
+  --assignment-field-gap: 4.6rem;
+  --assignment-gap-headline-cta: 4.6rem;
+  --assignment-gap-content-md: 3rem;
+
+  /*
+    Typography scale — Figma Test 1 @ 1440px
+    Hero · Drop teaser · Display text share these tokens.
+  */
+
+  /* Script — “New drop coming soon”, “Sneak peak…”, countdown expired */
+  --assignment-type-script-xl: clamp(3.6rem, 6vw, 5.6rem);
+  --assignment-type-script-lg: clamp(2.4rem, 4vw, 4.8rem);
+  --assignment-type-script-md: clamp(2.8rem, 5vw, 4rem);
+
+  /* Serif — hero “Spring Break” */
+  --assignment-type-serif-hero: clamp(4.8rem, 9vw, 10rem);
+  --assignment-type-serif-hero-mobile: clamp(3.2rem, 11vw, 5.6rem);
+
+  /* Display — “Best sellers” (Title Display) */
+  --assignment-type-display-xl: clamp(6rem, 12.5vw, 18rem);
+  --assignment-type-display-lg: clamp(6rem, 10vw, 14.4rem);
+  --assignment-type-display-md: clamp(4.8rem, 7.5vw, 10.8rem);
+
+  /* UI — Inter labels, inputs, buttons, countdown */
+  --assignment-type-ui-2xs: 1.1rem;
+  --assignment-type-ui-xs: 1.2rem;
+  --assignment-type-ui-sm: 1.3rem;
+  --assignment-type-ui-base: 1.4rem;
+  --assignment-type-ui-digit: 2.4rem;
+
+  /* Line height */
+  --assignment-leading-none: 1;
+  --assignment-leading-display: 1.2;
+
+  /* Letter spacing */
+  --assignment-tracking-display: -0.03em;
+  --assignment-tracking-serif: -0.02em;
+  --assignment-tracking-ui: 0.02em;
+  --assignment-tracking-caps-sm: 0.06em;
+  --assignment-tracking-caps: 0.08em;
+  --assignment-tracking-tab: 0.12em;
+
+  /*
+    Test 2 product card @ 214 × 415 (Figma)
+    Text block: title → secondary → price (stacked, not spaced apart)
+  */
+  --assignment-card-title-size: 1.4rem;
+  --assignment-card-title-line-height: 1.286;
+  --assignment-card-secondary-size: 1.2rem;
+  --assignment-card-secondary-line-height: 1.417;
+  --assignment-card-price-size: 1.4rem;
+  --assignment-card-price-line-height: 1.214;
+  --assignment-card-info-height: 10.9rem;
+  --assignment-card-info-padding-block-start: 1.2rem;
+  --assignment-card-info-padding-block-end: 1.2rem;
+  --assignment-card-info-padding-inline: 0.8rem;
+  --assignment-card-gap-title-secondary: 0.4rem;
+  --assignment-card-gap-secondary-price: 0.6rem;
+  --assignment-card-text-muted: rgba(18, 18, 18, 0.55);
+  --assignment-card-swatch-bar-height: 3.2rem;
+  --assignment-card-swatch-size: 2.4rem;
+  --assignment-card-swatch-gap: 0.4rem;
+  --assignment-card-quick-add-size: 3.2rem;
+  --assignment-card-overlay-inset: 0.8rem;
+
+  /* Aliases used by display-text section */
+  --assignment-display-line-height: var(--assignment-leading-display);
+  --assignment-display-letter-spacing: var(--assignment-tracking-display);
+  --assignment-display-size-large: var(--assignment-type-display-xl);
+  --assignment-display-size-medium: var(--assignment-type-display-lg);
+  --assignment-display-size-small: var(--assignment-type-display-md);
+}
+
+/* ── Shared type roles ── */
+
+.assignment-type-script-xl,
+.assignment-drop-teaser__headline {
+  font-family: var(--assignment-font-script);
+  font-size: var(--assignment-type-script-xl);
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--assignment-leading-none);
+}
+
+.assignment-type-script-lg,
+.assignment-drop-teaser__caption {
+  font-family: var(--assignment-font-script);
+  font-size: var(--assignment-type-script-lg);
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--assignment-leading-none);
+}
+
+.assignment-type-script-md,
+.assignment-countdown__expired {
+  font-family: var(--assignment-font-script);
+  font-size: var(--assignment-type-script-md);
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--assignment-leading-none);
+}
+
+.assignment-type-serif-hero,
+.assignment-hero__headline--single {
+  font-family: var(--assignment-font-serif);
+  font-size: var(--assignment-type-serif-hero);
+  font-weight: 400;
+  font-style: italic;
+  line-height: var(--assignment-leading-none);
+  letter-spacing: var(--assignment-tracking-serif);
+}
+
+.assignment-type-ui-label,
+.assignment-countdown__label,
+.assignment-hero__reviews-tab {
+  font-family: var(--assignment-font-ui);
+  font-size: var(--assignment-type-ui-2xs);
+  font-weight: 400;
+  line-height: var(--assignment-leading-display);
+  letter-spacing: var(--assignment-tracking-ui);
+}
+
+.assignment-type-ui-body,
+.assignment-drop-teaser__form-heading,
+.assignment-drop-teaser__message {
+  font-family: var(--assignment-font-ui);
+  font-size: var(--assignment-type-ui-sm);
+  font-weight: 400;
+  line-height: var(--assignment-leading-display);
+}
+
+.assignment-type-ui-input,
+.assignment-drop-teaser__input {
+  font-family: var(--assignment-font-ui);
+  font-size: var(--assignment-type-ui-base);
+  font-weight: 400;
+  line-height: var(--assignment-leading-display);
+}
+
+.assignment-type-ui-caps,
+.assignment-drop-teaser__submit {
+  font-family: var(--assignment-font-ui);
+  font-size: var(--assignment-type-ui-xs);
+  font-weight: 600;
+  line-height: var(--assignment-leading-display);
+  letter-spacing: var(--assignment-tracking-caps-sm);
+  text-transform: uppercase;
+}
+
+.assignment-type-ui-digit,
+.assignment-countdown__digit {
+  font-family: var(--assignment-font-ui);
+  font-size: var(--assignment-type-ui-digit);
+  font-weight: 500;
+  line-height: var(--assignment-leading-none);
+}
+
+/* Shared CTA — hero + future sections */
+.assignment-cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: auto;
+  min-width: auto;
+  padding: 1.5rem 4rem;
+  font-family: var(--assignment-font-ui);
+  font-size: var(--assignment-type-ui-2xs);
+  font-weight: 600;
+  letter-spacing: var(--assignment-tracking-caps);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgb(var(--color-button-text));
+  background-color: rgb(var(--color-button));
+  border: none;
+  border-radius: var(--assignment-button-radius);
+  box-shadow: none;
+}
+
+.assignment-cta-button::after,
+.assignment-cta-button::before {
+  display: none;
+}
+
+.assignment-cta-button:hover,
+.assignment-cta-button:focus-visible {
+  color: rgb(var(--color-button-text));
+  background-color: rgb(var(--color-button));
+  opacity: 0.94;
+}
+
+.assignment-cta-button:focus-visible {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: 0.2rem;
+}
+
+/* Display heading — “Best sellers” */
+.assignment-display-heading,
+.assignment-display-text h2.assignment-display-text__heading {
+  margin: 0;
+  font-family: var(--assignment-font-display);
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--assignment-display-line-height);
+  letter-spacing: var(--assignment-display-letter-spacing);
+  text-wrap: balance;
+  word-break: normal;
+  color: var(--assignment-color-brown);
+}
+
+.assignment-display-heading::first-letter,
+.assignment-display-text h2.assignment-display-text__heading::first-letter {
+  font-feature-settings: 'swsh' 1;
+}
+
+.assignment-display-heading em,
+.assignment-display-heading i,
+.assignment-display-text h2.assignment-display-text__heading em,
+.assignment-display-text h2.assignment-display-text__heading i {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.assignment-display-heading--has-fill,
+.assignment-display-text h2.assignment-display-text__heading--has-fill {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--assignment-display-text-fill, none);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.assignment-display-heading--small,
+.assignment-display-text h2.assignment-display-text__heading--small {
+  font-size: var(--assignment-display-size-small);
+}
+
+.assignment-display-heading--medium,
+.assignment-display-text h2.assignment-display-text__heading--medium {
+  font-size: var(--assignment-display-size-medium);
+}
+
+.assignment-display-heading--large,
+.assignment-display-text h2.assignment-display-text__heading--large {
+  font-size: var(--assignment-display-size-large);
+  min-height: 21.6rem;
+}
+
+@supports not (-webkit-background-clip: text) {
+  .assignment-display-heading--has-fill,
+  .assignment-display-text h2.assignment-display-text__heading--has-fill {
+    color: var(--assignment-color-brown);
+    -webkit-text-fill-color: var(--assignment-color-brown);
+    background-image: none;
+  }
+}
+
+/*
+  Theme color schemes (Theme settings → Colors):
+  - scheme-6  Assignment Hero   — white text, mint button, black label
+  - scheme-7  Assignment Drop   — brown panel, white countdown tiles
+  - scheme-8  Assignment Light  — white background, dark text
+*/

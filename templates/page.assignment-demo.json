@@ -1,0 +1,39 @@
+{
+  "sections": {
+    "assignment-hero": {
+      "type": "assignment-hero",
+      "settings": {}
+    },
+    "assignment-drop-teaser": {
+      "type": "assignment-drop-teaser",
+      "settings": {
+        "countdown_datetime": "2026-12-01T12:00:00",
+        "left_color_scheme": "scheme-7",
+        "form_color_scheme": "scheme-8"
+      }
+    },
+    "assignment-display-text": {
+      "type": "assignment-display-text",
+      "settings": {
+        "heading": "Best sellers",
+        "heading_size": "large",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "assignment-collection-grid": {
+      "type": "assignment-collection-grid",
+      "settings": {
+        "heading": "Best sellers",
+        "products_to_show": 6,
+        "columns_desktop": "6"
+      }
+    }
+  },
+  "order": [
+    "assignment-hero",
+    "assignment-drop-teaser",
+    "assignment-display-text",
+    "assignment-collection-grid"
+  ]
+}

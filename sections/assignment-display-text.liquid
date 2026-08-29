@@ -1,0 +1,156 @@
+{{ 'section-assignment-display-text.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign fill_image_url = blank
+  if section.settings.fill_image != blank
+    assign fill_image_url = section.settings.fill_image | image_url: width: 2000
+  endif
+  assign has_text_fill = false
+  if fill_image_url != blank or section.settings.fill_video != blank
+    assign has_text_fill = true
+  endif
+-%}
+{%- style -%}
+  #AssignmentDisplayText-{{ section.id }} {
+    --assignment-display-text-fill: {% if fill_image_url != blank %}url('{{ fill_image_url }}'){% else %}none{% endif %};
+  }
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section
+  id="AssignmentDisplayText-{{ section.id }}"
+  class="assignment-display-text color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding"
+>
+  {%- if section.settings.fill_image != blank -%}
+    <div class="assignment-display-text__fallback-bg" aria-hidden="true">
+      {{
+        section.settings.fill_image
+        | image_url: width: 2000
+        | image_tag:
+          class: 'assignment-display-text__fallback-img',
+          sizes: '100vw',
+          widths: '750, 1100, 1500, 2000'
+      }}
+    </div>
+  {%- endif -%}
+  {%- if section.settings.fill_video != blank -%}
+    <div class="assignment-display-text__video-bg" aria-hidden="true">
+      {{
+        section.settings.fill_video
+        | video_tag:
+          image_size: '1100x',
+          autoplay: true,
+          loop: true,
+          muted: true,
+          controls: false,
+          class: 'assignment-display-text__video'
+      }}
+    </div>
+  {%- endif -%}
+
+  <div class="assignment-display-text__content">
+    {%- if section.settings.heading != blank -%}
+      <h2
+        class="assignment-display-text__heading assignment-display-text__heading--{{ section.settings.heading_size }}{% if has_text_fill %} assignment-display-text__heading--has-fill{% endif %}"      >
+        {{ section.settings.heading }}
+      </h2>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Assignment Display Text",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Display text",
+      "default": "Best sellers",
+      "info": "Italicize part of the text for Figma style (e.g. sellers)."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Text size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "image_picker",
+      "id": "fill_image",
+      "label": "Text fill image",
+      "info": "Use a photo or texture (e.g. car interior from Figma). Do not use a logo or text graphic."
+    },
+    {
+      "type": "video",
+      "id": "fill_video",
+      "label": "Text fill video",
+      "info": "Optional. Used as decorative background when background-clip is unsupported."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "info": "Use Scheme 8 (Assignment Light): white background, dark fallback text.",
+      "default": "scheme-8"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Assignment Display Text",
+      "settings": {
+        "heading": "Best sellers",
+        "heading_size": "large",
+        "color_scheme": "scheme-8",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    }
+  ]
+}
+{% endschema %}

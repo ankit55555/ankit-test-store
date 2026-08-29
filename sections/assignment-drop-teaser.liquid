@@ -1,0 +1,333 @@
+{{ 'section-assignment-drop-teaser.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'assignment-countdown.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'assignment-drop-teaser-form.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section
+  id="AssignmentDropTeaser-{{ section.id }}"
+  class="assignment-drop-teaser section-{{ section.id }}-padding"
+>
+  <div class="assignment-drop-teaser__grid">
+    <div class="assignment-drop-teaser__panel assignment-drop-teaser__panel--left color-{{ section.settings.left_color_scheme }} gradient">
+      {%- if section.settings.pattern_image != blank -%}
+        <div
+          class="assignment-drop-teaser__pattern"
+          style="background-image: url('{{ section.settings.pattern_image | image_url: width: 1200 }}');"
+          aria-hidden="true"
+        ></div>
+      {%- endif -%}
+
+      <div class="assignment-drop-teaser__left-content">
+        {%- if section.settings.left_headline != blank -%}
+          <div class="assignment-drop-teaser__headline rte">
+            {{ section.settings.left_headline }}
+          </div>
+        {%- endif -%}
+
+        <assignment-countdown
+          class="assignment-countdown"
+          role="timer"
+          aria-live="polite"
+          aria-atomic="true"
+          data-target="{{ section.settings.countdown_datetime | escape }}"
+          data-expired-message="{{ section.settings.countdown_expired_message | escape }}"
+        >
+          <div class="assignment-countdown__grid">
+            {%- assign countdown_units = 'days,hours,minutes,seconds' | split: ',' -%}
+            {%- assign countdown_labels = section.settings.countdown_label_days
+              | append: '|'
+              | append: section.settings.countdown_label_hours
+              | append: '|'
+              | append: section.settings.countdown_label_minutes
+              | append: '|'
+              | append: section.settings.countdown_label_seconds
+              | split: '|'
+            -%}
+            {%- for unit in countdown_units -%}
+              <div class="assignment-countdown__unit">
+                <span class="assignment-countdown__label">{{ countdown_labels[forloop.index0] }}</span>
+                <div class="assignment-countdown__digits" aria-hidden="true">
+                  <span class="assignment-countdown__digit" data-digit="{{ unit }}-tens">0</span>
+                  <span class="assignment-countdown__digit" data-digit="{{ unit }}-ones">0</span>
+                </div>
+                <span class="visually-hidden assignment-countdown__live" data-live="{{ unit }}"></span>
+              </div>
+            {%- endfor -%}
+          </div>
+          <p class="assignment-countdown__expired" role="status" hidden>
+            {{ section.settings.countdown_expired_message }}
+          </p>
+        </assignment-countdown>
+      </div>
+    </div>
+
+    <div class="assignment-drop-teaser__panel assignment-drop-teaser__panel--right">
+      <div class="assignment-drop-teaser__card">
+        {%- if section.settings.right_image != blank -%}
+          {{
+            section.settings.right_image
+            | image_url: width: 1200
+            | image_tag:
+              class: 'assignment-drop-teaser__card-image',
+              sizes: '(min-width: 990px) 50vw, 100vw',
+              widths: '375, 550, 750, 900, 1200'
+          }}
+        {%- else -%}
+          {{ 'product-apparel-2' | placeholder_svg_tag: 'assignment-drop-teaser__card-placeholder' }}
+        {%- endif -%}
+
+        {%- if section.settings.right_caption != blank -%}
+          <div class="assignment-drop-teaser__caption rte">
+            {{ section.settings.right_caption }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="assignment-drop-teaser__form-wrap color-{{ section.settings.form_color_scheme }} gradient">
+        {%- assign drop_teaser_form_id = 'DropTeaserForm-' | append: section.id -%}
+        <assignment-drop-teaser-form>
+          {% form 'customer', class: 'assignment-drop-teaser__form', id: drop_teaser_form_id %}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+
+            {%- if section.settings.form_heading != blank -%}
+              <p class="assignment-drop-teaser__form-heading">{{ section.settings.form_heading | escape }}</p>
+            {%- endif -%}
+
+            {%- unless form.posted_successfully? -%}
+              <div class="assignment-drop-teaser__field">
+                <label class="visually-hidden" for="DropTeaserEmail-{{ section.id }}">
+                  {{ section.settings.email_placeholder }}
+                </label>
+                <input
+                  id="DropTeaserEmail-{{ section.id }}"
+                  type="email"
+                  name="contact[email]"
+                  class="assignment-drop-teaser__input"
+                  value="{{ form.email }}"
+                  placeholder="{{ section.settings.email_placeholder }}"
+                  autocomplete="email"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  aria-required="true"
+                  required
+                  {% if form.errors %}
+                    aria-invalid="true"
+                    aria-describedby="DropTeaser-error-{{ section.id }}"
+                  {% endif %}
+                >
+                <button type="submit" class="assignment-drop-teaser__submit">
+                  {{ section.settings.submit_label | escape }}
+                </button>
+              </div>
+            {%- endunless -%}
+
+            {%- if form.errors -%}
+              <p
+                class="assignment-drop-teaser__message assignment-drop-teaser__message--error"
+                id="DropTeaser-error-{{ section.id }}"
+                role="alert"
+              >
+                {{ section.settings.error_message | escape }}
+                {{ form.errors.translated_fields.email | capitalize }}
+                {{ form.errors.messages.email }}
+              </p>
+            {%- endif -%}
+
+            {%- if form.posted_successfully? -%}
+              <p
+                class="assignment-drop-teaser__message assignment-drop-teaser__message--success"
+                id="DropTeaser-success-{{ section.id }}"
+                role="status"
+                tabindex="-1"
+              >
+                {{ section.settings.success_message | escape }}
+              </p>
+            {%- endif -%}
+          {% endform %}
+        </assignment-drop-teaser-form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Assignment Drop Teaser",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Left panel"
+    },
+    {
+      "type": "image_picker",
+      "id": "pattern_image",
+      "label": "Background pattern",
+      "info": "Upload the Figma line-art pattern (PNG/SVG). Do not use a photo or theme cover image."
+    },
+    {
+      "type": "richtext",
+      "id": "left_headline",
+      "label": "Headline",
+      "default": "<p>New drop coming soon</p>"
+    },
+    {
+      "type": "text",
+      "id": "countdown_datetime",
+      "label": "Countdown date and time",
+      "info": "ISO 8601 format in your store timezone, e.g. 2026-12-01T12:00:00",
+      "default": "2026-12-01T12:00:00"
+    },
+    {
+      "type": "text",
+      "id": "countdown_expired_message",
+      "label": "Message when countdown ends",
+      "default": "Drop is live"
+    },
+    {
+      "type": "text",
+      "id": "countdown_label_days",
+      "label": "Days label",
+      "default": "Days"
+    },
+    {
+      "type": "text",
+      "id": "countdown_label_hours",
+      "label": "Hours label",
+      "default": "Hours"
+    },
+    {
+      "type": "text",
+      "id": "countdown_label_minutes",
+      "label": "Minutes label",
+      "default": "Mins"
+    },
+    {
+      "type": "text",
+      "id": "countdown_label_seconds",
+      "label": "Seconds label",
+      "default": "Secs"
+    },
+    {
+      "type": "color_scheme",
+      "id": "left_color_scheme",
+      "label": "Left panel color scheme",
+      "info": "Use Scheme 7 (Assignment Drop): brown background, white countdown tiles.",
+      "default": "scheme-7"
+    },
+    {
+      "type": "header",
+      "content": "Right panel"
+    },
+    {
+      "type": "image_picker",
+      "id": "right_image",
+      "label": "Card image"
+    },
+    {
+      "type": "richtext",
+      "id": "right_caption",
+      "label": "Image caption",
+      "default": "<p>Sneak peak...</p>"
+    },
+    {
+      "type": "text",
+      "id": "form_heading",
+      "label": "Form heading",
+      "default": "Get notified"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email placeholder",
+      "default": "user@gmail.com"
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit button label",
+      "default": "NOTIFY ME"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thanks for signing up."
+    },
+    {
+      "type": "text",
+      "id": "error_message",
+      "label": "Error message",
+      "default": "Please enter a valid email address."
+    },
+    {
+      "type": "color_scheme",
+      "id": "form_color_scheme",
+      "label": "Form color scheme",
+      "info": "Use Scheme 8 (Assignment Light): white box, black text, underlined input.",
+      "default": "scheme-8"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Assignment Drop Teaser",
+      "settings": {
+        "left_headline": "<p>New drop coming soon</p>",
+        "countdown_datetime": "2026-12-01T12:00:00",
+        "countdown_expired_message": "Drop is live",
+        "countdown_label_days": "Days",
+        "countdown_label_hours": "Hours",
+        "countdown_label_minutes": "Mins",
+        "countdown_label_seconds": "Secs",
+        "left_color_scheme": "scheme-7",
+        "right_caption": "<p>Sneak peak...</p>",
+        "form_heading": "Get notified",
+        "email_placeholder": "user@gmail.com",
+        "submit_label": "NOTIFY ME",
+        "form_color_scheme": "scheme-8"
+      }
+    }
+  ]
+}
+{% endschema %}

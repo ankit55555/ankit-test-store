@@ -1,0 +1,286 @@
+/* Drop teaser — Figma 1440 × 567 */
+
+.assignment-drop-teaser__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--assignment-panel-gap);
+  padding: var(--assignment-section-padding);
+  box-sizing: border-box;
+  min-height: 56.7rem;
+}
+
+@media screen and (min-width: 990px) {
+  .assignment-drop-teaser__grid {
+    grid-template-columns: 1fr 1fr;
+    height: 56.7rem;
+    min-height: 56.7rem;
+  }
+
+  .assignment-drop-teaser__panel {
+    min-height: 0;
+    height: 100%;
+    border-radius: var(--assignment-panel-radius);
+  }
+}
+
+.assignment-drop-teaser__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 32rem;
+  color: rgb(var(--color-foreground));
+  overflow: hidden;
+  border-radius: var(--assignment-panel-radius);
+}
+
+.assignment-drop-teaser__panel--left {
+  justify-content: center;
+  padding: 4rem 2rem;
+  background-color: var(--assignment-color-brown-panel);
+  color: var(--assignment-color-white);
+}
+
+/* Figma: brown panel even if the wrong color scheme is picked in the editor */
+.assignment-drop-teaser__panel--left.color-scheme-7,
+.assignment-drop-teaser__panel--left[class*='color-scheme-'] {
+  background-color: var(--assignment-color-brown-panel);
+  color: var(--assignment-color-white);
+}
+
+.assignment-drop-teaser__pattern {
+  position: absolute;
+  inset: 0;
+  background-size: 18rem;
+  background-repeat: repeat;
+  background-position: center;
+  opacity: 0.35;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.assignment-drop-teaser__left-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--assignment-gap-content-md);
+  text-align: center;
+  width: 100%;
+}
+
+.assignment-drop-teaser__headline {
+  color: var(--assignment-color-white);
+}
+
+.assignment-drop-teaser__headline p {
+  margin: 0;
+}
+
+.assignment-countdown {
+  width: 100%;
+  max-width: 42rem;
+}
+
+.assignment-countdown__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+@media screen and (max-width: 549px) {
+  .assignment-countdown__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.assignment-countdown__unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.assignment-drop-teaser__panel--left .assignment-countdown__label {
+  color: var(--assignment-color-white);
+}
+
+.assignment-drop-teaser__panel--left .assignment-countdown__digit {
+  color: var(--assignment-color-brown-deep);
+  background: var(--assignment-color-white);
+}
+
+.assignment-drop-teaser__panel--left .assignment-countdown__expired {
+  color: var(--assignment-color-white);
+}
+
+.assignment-countdown__digits {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.assignment-countdown__digit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.6rem;
+  height: 4.8rem;
+  padding: 0 0.6rem;
+  border: none;
+  border-radius: var(--assignment-button-radius);
+}
+
+.assignment-countdown__expired {
+  margin: 0;
+  text-align: center;
+}
+
+.assignment-countdown__label {
+  text-transform: capitalize;
+}
+
+.assignment-countdown.is-expired .assignment-countdown__grid {
+  display: none;
+}
+
+.assignment-drop-teaser__panel--right {
+  padding: 0;
+  background: var(--assignment-color-white);
+}
+
+.assignment-drop-teaser__card {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.assignment-drop-teaser__card-image,
+.assignment-drop-teaser__card-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 20rem;
+  object-fit: cover;
+  display: block;
+}
+
+.assignment-drop-teaser__caption {
+  position: absolute;
+  left: 2rem;
+  bottom: 2rem;
+  color: var(--assignment-color-white);
+  text-shadow: 0 0.2rem 1.2rem rgba(0, 0, 0, 0.35);
+}
+
+.assignment-drop-teaser__caption p {
+  margin: 0;
+}
+
+.assignment-drop-teaser__form-wrap {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 1.6rem 0.8rem;
+  background: rgb(var(--color-background));
+  border-top: 0.1rem solid rgb(var(--color-foreground));
+  border-radius: 0;
+}
+
+.assignment-drop-teaser__panel--right .assignment-drop-teaser__form-wrap {
+  background: var(--assignment-color-white);
+  border-top-color: var(--assignment-color-black);
+}
+
+.assignment-drop-teaser__form-heading {
+  margin: 0 0 1.2rem;
+  color: rgb(var(--color-foreground));
+  text-align: left;
+}
+
+.assignment-drop-teaser__field {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: var(--assignment-field-gap);
+}
+
+.assignment-drop-teaser__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: auto;
+  padding: 0 0 0.6rem;
+  color: rgb(var(--color-foreground));
+  background: transparent;
+  border: none;
+  border-bottom: 0.1rem solid rgb(var(--color-foreground));
+  border-radius: var(--assignment-button-radius);
+  box-shadow: none;
+}
+
+.assignment-drop-teaser__input::placeholder {
+  color: rgba(var(--color-foreground), 0.45);
+}
+
+.assignment-drop-teaser__input:focus,
+.assignment-drop-teaser__input:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-bottom-color: rgb(var(--color-foreground));
+}
+
+.assignment-drop-teaser__submit {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0 0 0.6rem;
+  color: rgb(var(--color-foreground));
+  background: transparent;
+  border: none;
+  border-radius: var(--assignment-button-radius);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.assignment-drop-teaser__submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.assignment-drop-teaser__submit:focus-visible {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: 0.2rem;
+}
+
+.assignment-drop-teaser__message {
+  margin: 1.2rem 0 0;
+  color: rgb(var(--color-foreground));
+  text-align: left;
+}
+
+.assignment-drop-teaser__message--error {
+  color: var(--assignment-color-error);
+}
+
+@media screen and (max-width: 749px) {
+  .assignment-drop-teaser__grid {
+    height: auto;
+    min-height: auto;
+  }
+
+  .assignment-drop-teaser__panel {
+    min-height: 28rem;
+  }
+
+  .assignment-drop-teaser__field {
+    flex-wrap: wrap;
+    gap: 1.6rem;
+  }
+
+  .assignment-drop-teaser__submit {
+    padding-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assignment-countdown__digit {
+    transition: none;
+  }
+}
