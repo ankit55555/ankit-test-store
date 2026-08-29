@@ -9,76 +9,80 @@
  */
 {
   "sections": {
-    "image_banner": {
-      "type": "image-banner",
-      "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
-          }
-        },
-        "button": {
-          "type": "buttons",
-          "settings": {
-            "button_label_1": "Shop all",
-            "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
-          }
-        }
-      },
-      "block_order": [
-        "heading",
-        "button"
-      ],
+    "assignment_hero_cHMtkW": {
+      "type": "assignment-hero",
+      "name": "Assignment Hero",
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "desktop_content_position": "bottom-center",
-        "show_text_box": false,
-        "image_behavior": "none",
-        "desktop_content_alignment": "center",
-        "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
-        "stack_images_on_mobile": false,
-        "show_text_below": false
+        "accessibility_label": "Hero banner",
+        "background_image": "shopify://shop_images/Image_1.png",
+        "overlay_opacity": 0,
+        "enable_grain": true,
+        "headline_type": "image",
+        "headline_text": "Spring Break",
+        "show_headline_badge": true,
+        "headline_badge": "84'",
+        "button_label": "SHOP THE COLLECTION",
+        "button_link": "",
+        "button_style_secondary": false,
+        "show_reviews_tab": true,
+        "reviews_tab_label": "Reviews",
+        "reviews_tab_link": "",
+        "color_scheme": ""
       }
     },
-    "featured_collection": {
-      "type": "featured-collection",
+    "assignment_drop_teaser_jTa9ag": {
+      "type": "assignment-drop-teaser",
+      "name": "Assignment Drop Teaser",
       "settings": {
-        "title": "Featured products",
-        "heading_size": "h2",
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
-        "collection": "all",
+        "left_headline": "<p>New drop coming soon</p>",
+        "countdown_datetime": "2026-12-01T12:00:00",
+        "countdown_expired_message": "Drop is live",
+        "countdown_label_days": "Days",
+        "countdown_label_hours": "Hours",
+        "countdown_label_minutes": "Mins",
+        "countdown_label_seconds": "Secs",
+        "left_color_scheme": "scheme-7",
+        "right_caption": "<p>Sneak peak...</p>",
+        "form_heading": "Get notified",
+        "email_placeholder": "user@gmail.com",
+        "submit_label": "NOTIFY ME",
+        "success_message": "Thanks for signing up.",
+        "error_message": "Please enter a valid email address.",
+        "form_color_scheme": "scheme-8",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "assignment_display_text_Pg8UxN": {
+      "type": "assignment-display-text",
+      "name": "Assignment Display Text",
+      "settings": {
+        "heading": "Best sellers",
+        "heading_size": "large",
+        "color_scheme": "scheme-8",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "assignment_collection_grid_K6mgEx": {
+      "type": "assignment-collection-grid",
+      "name": "Assignment Grid",
+      "settings": {
+        "heading": "Best sellers",
+        "collection": "assignment-test-products",
         "products_to_show": 8,
-        "columns_desktop": 4,
-        "color_scheme": "scheme-1",
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": false,
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": true,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
-        "columns_mobile": "2",
-        "padding_top": 44,
+        "columns_desktop": "4",
+        "empty_message": "Choose a collection with products to preview this grid.",
+        "color_scheme": "",
+        "padding_top": 36,
         "padding_bottom": 36
       }
     }
   },
   "order": [
-    "image_banner",
-    "featured_collection"
+    "assignment_hero_cHMtkW",
+    "assignment_drop_teaser_jTa9ag",
+    "assignment_display_text_Pg8UxN",
+    "assignment_collection_grid_K6mgEx"
   ]
 }
