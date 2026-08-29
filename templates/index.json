@@ -22,7 +22,7 @@
         "show_headline_badge": true,
         "headline_badge": "84'",
         "button_label": "SHOP THE COLLECTION",
-        "button_link": "",
+        "button_link": "shopify://collections/assignment-test-products",
         "button_style_secondary": false,
         "show_reviews_tab": true,
         "reviews_tab_label": "Reviews",
@@ -35,7 +35,7 @@
       "name": "Assignment Drop Teaser",
       "settings": {
         "left_headline": "<p>New drop coming soon</p>",
-        "countdown_datetime": "2026-12-01T12:00:00",
+        "countdown_datetime": "2026-09-01T12:00:00",
         "countdown_expired_message": "Drop is live",
         "countdown_label_days": "Days",
         "countdown_label_hours": "Hours",
