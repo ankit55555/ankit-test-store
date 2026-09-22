@@ -1,0 +1,656 @@
+{%- comment -%}
+  Guided product configurator for the tension fabric backdrop.
+  Options are read by position: option1 = size, option2 = printing, option3 = hardware.
+{%- endcomment -%}
+
+{{ 'product-configurator.css' | asset_url | stylesheet_tag }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+>
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'product-configurator.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign product_form_id = 'product-form-' | append: section.id
+  assign size_values = product.options_with_values[0].values
+  assign print_values = product.options_with_values[1].values
+  assign frame_values = product.options_with_values[2].values
+  assign size_hints = section.settings.size_hints | split: '|'
+
+  assign popular_index = section.settings.popular_size | minus: 1
+  if popular_index >= size_values.size
+    assign popular_index = 0
+  endif
+
+  if product.selected_variant
+    assign initial = product.selected_variant
+  else
+    assign popular_name = size_values[popular_index].name
+    for v in product.variants
+      if v.option1 == popular_name and v.option2 == print_values[0].name and v.option3 == frame_values[0].name
+        assign initial = v
+        break
+      endif
+    endfor
+  endif
+  if initial == blank
+    assign initial = product.selected_or_first_available_variant
+  endif
+
+  assign initial_media = initial.featured_media | default: product.featured_media
+-%}
+
+<bds-configurator
+  class="bds-config section-{{ section.id }}-padding"
+  data-section-id="{{ section.id }}"
+  data-product-url="{{ product.url }}"
+  data-money-format="{{ shop.money_format | escape }}"
+>
+  <div class="page-width bds-config__grid">
+    {%- comment -%} Gallery {%- endcomment -%}
+    <div class="bds-gallery">
+      <div class="bds-gallery__main">
+        {%- if initial_media -%}
+          {{
+            initial_media.preview_image
+            | image_url: width: 1400
+            | image_tag:
+              widths: '550, 720, 990, 1100, 1400',
+              sizes: '(min-width: 990px) 55vw, 100vw',
+              loading: 'eager',
+              fetchpriority: 'high',
+              data-bds-main-image: '',
+              alt: product.title
+          }}
+        {%- else -%}
+          {{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+      </div>
+      {%- if product.media.size > 1 -%}
+        <ul class="bds-gallery__thumbs" role="list" aria-label="Product images">
+          {%- for media in product.media -%}
+            <li>
+              <button
+                type="button"
+                class="bds-gallery__thumb"
+                data-bds-thumb
+                data-media-id="{{ media.id }}"
+                data-src="{{ media.preview_image | image_url: width: 1400 }}"
+                data-srcset="{{ media.preview_image | image_url: width: 720 }} 720w, {{ media.preview_image | image_url: width: 1100 }} 1100w, {{ media.preview_image | image_url: width: 1400 }} 1400w"
+                aria-label="Show image {{ forloop.index }}"
+                {% if media.id == initial_media.id %}
+                  aria-current="true"
+                {% endif %}
+              >
+                {{ media.preview_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}
+              </button>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Configurator {%- endcomment -%}
+    <div class="bds-panel">
+      <header class="bds-head">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="bds-head__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        <h1 class="bds-head__title">{{ product.title | escape }}</h1>
+        <div class="bds-head__price">
+          <span class="bds-head__price-value" data-bds-price>{{ initial.price | money }}</span>
+          <span class="bds-head__price-note">{{ section.settings.price_note }}</span>
+        </div>
+        {%- if section.settings.highlights != blank -%}
+          <div class="bds-head__highlights">{{ section.settings.highlights }}</div>
+        {%- endif -%}
+      </header>
+
+      {%- comment -%} Step 1: Size {%- endcomment -%}
+      <fieldset class="bds-step" data-bds-step="size">
+        <legend class="visually-hidden">Step 1: Choose your size</legend>
+        <div class="bds-step__head" aria-hidden="true">
+          <span class="bds-step__num">1</span>
+          <span class="bds-step__title">Choose your wall size</span>
+          <span class="bds-step__value" data-bds-value="size"></span>
+        </div>
+        <p class="bds-step__help">{{ section.settings.size_help }}</p>
+        <div class="bds-sizes">
+          {%- for value in size_values -%}
+            {%- liquid
+              assign idx = forloop.index0
+              assign width_label = value.name | split: ' W' | first | replace: 'ft', ' ft'
+              assign card_price = nil
+              for v in product.variants
+                if v.option1 == value.name and v.option2 == initial.option2 and v.option3 == initial.option3
+                  assign card_price = v.price
+                  break
+                endif
+              endfor
+            -%}
+            <label class="bds-card bds-card--size">
+              <input
+                type="radio"
+                class="bds-card__input"
+                name="bds-size-{{ section.id }}"
+                value="{{ idx }}"
+                data-bds-option="size"
+                {% if value.name == initial.option1 %}
+                  checked
+                {% endif %}
+              >
+              {%- if idx == popular_index -%}
+                <span class="bds-card__badge">Most popular</span>
+              {%- endif -%}
+              <span class="bds-card__big">{{ width_label }}</span>
+              <span class="bds-card__meta">{{ value.name | replace: 'ft', ' ft' | replace: ' x ', ' × ' }}</span>
+              {%- if size_hints[idx] != blank -%}
+                <span class="bds-card__hint">{{ size_hints[idx] | strip }}</span>
+              {%- endif -%}
+              <span class="bds-card__price" data-bds-card-price="size" data-index="{{ idx }}">
+                {%- if card_price -%}{{ card_price | money }}{%- endif -%}
+              </span>
+            </label>
+          {%- endfor -%}
+        </div>
+        <button type="button" class="bds-assist" data-bds-open="quote">
+          {% render 'bds-icon', icon: 'ruler' %}
+          <span>
+            Need a different size? <strong>Request a custom size quote</strong>
+            <span class="bds-assist__sub">We reply in {{ section.settings.quote_time }}</span>
+          </span>
+          {% render 'bds-icon', icon: 'arrow' %}
+        </button>
+      </fieldset>
+
+      {%- comment -%} Step 2: Print & Frame {%- endcomment -%}
+      <fieldset class="bds-step" data-bds-step="build">
+        <legend class="visually-hidden">Step 2: Choose printing and frame</legend>
+        <div class="bds-step__head" aria-hidden="true">
+          <span class="bds-step__num">2</span>
+          <span class="bds-step__title">Printing &amp; frame</span>
+          <span class="bds-step__value" data-bds-value="build"></span>
+        </div>
+
+        <p class="bds-step__label" id="bds-print-label-{{ section.id }}">Printing</p>
+        <div class="bds-options bds-options--3" role="radiogroup" aria-labelledby="bds-print-label-{{ section.id }}">
+          {%- for value in print_values -%}
+            {%- liquid
+              assign n = forloop.index
+              assign title_key = 'print_' | append: n | append: '_title'
+              assign text_key = 'print_' | append: n | append: '_text'
+            -%}
+            <label class="bds-card bds-card--option">
+              <input
+                type="radio"
+                class="bds-card__input"
+                name="bds-print-{{ section.id }}"
+                value="{{ forloop.index0 }}"
+                data-bds-option="print"
+                data-label="{{ section.settings[title_key] | default: value.name | escape }}"
+                {% if value.name == initial.option2 %}
+                  checked
+                {% endif %}
+              >
+              <span class="bds-card__row">
+                <span class="bds-card__title">{{ section.settings[title_key] | default: value.name }}</span>
+                <span class="bds-card__price" data-bds-card-price="print" data-index="{{ forloop.index0 }}"></span>
+              </span>
+              <span class="bds-card__text">{{ section.settings[text_key] }}</span>
+            </label>
+          {%- endfor -%}
+        </div>
+
+        <p class="bds-step__label" id="bds-frame-label-{{ section.id }}">Frame</p>
+        <div class="bds-options bds-options--2" role="radiogroup" aria-labelledby="bds-frame-label-{{ section.id }}">
+          {%- for value in frame_values -%}
+            {%- liquid
+              assign n = forloop.index
+              assign title_key = 'frame_' | append: n | append: '_title'
+              assign text_key = 'frame_' | append: n | append: '_text'
+            -%}
+            <label class="bds-card bds-card--option">
+              <input
+                type="radio"
+                class="bds-card__input"
+                name="bds-frame-{{ section.id }}"
+                value="{{ forloop.index0 }}"
+                data-bds-option="frame"
+                data-label="{{ section.settings[title_key] | default: value.name | escape }}"
+                {% if value.name == initial.option3 %}
+                  checked
+                {% endif %}
+              >
+              <span class="bds-card__row">
+                <span class="bds-card__title">{{ section.settings[title_key] | default: value.name }}</span>
+                <span class="bds-card__price" data-bds-card-price="frame" data-index="{{ forloop.index0 }}"></span>
+              </span>
+              <span class="bds-card__text">{{ section.settings[text_key] }}</span>
+            </label>
+          {%- endfor -%}
+        </div>
+        <p class="bds-inline-note" data-bds-combo-note hidden>
+          {% render 'bds-icon', icon: 'info' %}
+          <span>Frame only already includes the aluminum frame, so &ldquo;print only&rdquo; isn&rsquo;t available.</span>
+        </p>
+      </fieldset>
+
+      {%- comment -%} Step 3: Artwork {%- endcomment -%}
+      <fieldset class="bds-step" data-bds-step="artwork">
+        <legend class="visually-hidden">Step 3: Artwork</legend>
+        <div class="bds-step__head" aria-hidden="true">
+          <span class="bds-step__num">3</span>
+          <span class="bds-step__title">Your artwork</span>
+          <span class="bds-step__value" data-bds-value="artwork"></span>
+        </div>
+
+        <div data-bds-artwork-body>
+          <div class="bds-options bds-options--2">
+            <label class="bds-card bds-card--option">
+              <input
+                type="radio"
+                class="bds-card__input"
+                name="bds-artwork-{{ section.id }}"
+                value="upload"
+                data-bds-option="artwork"
+                data-label="Uploading my artwork"
+                checked
+              >
+              <span class="bds-card__row">
+                <span class="bds-card__title">{% render 'bds-icon', icon: 'upload' %} I have my artwork</span>
+              </span>
+              <span class="bds-card__text">Upload now or send it after checkout.</span>
+            </label>
+            <label class="bds-card bds-card--option">
+              <input
+                type="radio"
+                class="bds-card__input"
+                name="bds-artwork-{{ section.id }}"
+                value="design"
+                data-bds-option="artwork"
+                data-label="Free design help"
+              >
+              <span class="bds-card__row">
+                <span class="bds-card__title">{% render 'bds-icon', icon: 'brush' %} I need design help</span>
+                <span class="bds-card__tag">Free</span>
+              </span>
+              <span class="bds-card__text">Our designers create a 2D mock-up for you.</span>
+            </label>
+          </div>
+
+          <div class="bds-artwork-panel" data-bds-panel="upload">
+            <label class="bds-drop" data-bds-drop>
+              <input
+                type="file"
+                class="bds-drop__input"
+                name="properties[Artwork]"
+                form="{{ product_form_id }}"
+                accept=".pdf,.ai,.eps,.psd,.jpg,.jpeg,.png,.tif,.tiff,.svg"
+                data-bds-file
+              >
+              {% render 'bds-icon', icon: 'cloud' %}
+              <span class="bds-drop__title"><strong>Click to upload</strong> or drag and drop</span>
+              <span class="bds-drop__hint">PDF, AI, EPS, PSD, JPG, PNG or TIFF &middot; max 20 MB</span>
+            </label>
+            <div class="bds-drop__file" data-bds-file-chip hidden>
+              {% render 'bds-icon', icon: 'file' %}
+              <span class="bds-drop__name" data-bds-file-name></span>
+              <button type="button" class="bds-link" data-bds-file-remove>Remove</button>
+            </div>
+            <p class="bds-inline-note bds-inline-note--error" data-bds-file-error hidden></p>
+            <p class="bds-note">No file yet? Add to cart now &mdash; you can send it after checkout. We always share a proof before printing.</p>
+          </div>
+
+          <div class="bds-artwork-panel bds-artwork-panel--design" data-bds-panel="design" hidden>
+            <input
+              type="hidden"
+              name="properties[Design help]"
+              value="Free 2D design review requested"
+              form="{{ product_form_id }}"
+              data-bds-design-property
+              disabled
+            >
+            <ul class="bds-timeline" role="list">
+              <li><span>1</span>Send us your logo, text &amp; ideas</li>
+              <li><span>2</span>We reply in {{ section.settings.design_reply_time }}</li>
+              <li><span>3</span>2D mock-up within {{ section.settings.design_mockup_time }}</li>
+            </ul>
+            <button type="button" class="bds-btn bds-btn--secondary" data-bds-open="design">
+              Request free 2D design review
+            </button>
+            <p class="bds-note">Ready to order? Add to cart now and we&rsquo;ll contact you about the design after checkout.</p>
+          </div>
+        </div>
+
+        <p class="bds-step__help" data-bds-artwork-skip hidden>
+          No artwork needed &mdash; you&rsquo;re ordering the frame only.
+        </p>
+      </fieldset>
+
+      {%- comment -%} Step 4: Review & add to cart {%- endcomment -%}
+      <section class="bds-summary" aria-labelledby="bds-summary-title-{{ section.id }}">
+        <div class="bds-step__head">
+          <span class="bds-step__num">4</span>
+          <h2 class="bds-step__title" id="bds-summary-title-{{ section.id }}">Review &amp; add to cart</h2>
+        </div>
+        <dl class="bds-summary__list">
+          <div>
+            <dt>Size</dt>
+            <dd data-bds-summary="size"></dd>
+          </div>
+          <div>
+            <dt>Printing</dt>
+            <dd data-bds-summary="print"></dd>
+          </div>
+          <div>
+            <dt>Frame</dt>
+            <dd data-bds-summary="frame"></dd>
+          </div>
+          <div>
+            <dt>Artwork</dt>
+            <dd data-bds-summary="artwork"></dd>
+          </div>
+        </dl>
+
+        <ul class="bds-summary__meta" role="list">
+          <li>{% render 'bds-icon', icon: 'clock' %}<span>{{ section.settings.production_text }}</span></li>
+          <li>{% render 'bds-icon', icon: 'truck' %}<span>{{ section.settings.delivery_text }}</span></li>
+        </ul>
+
+        <div class="bds-summary__total">
+          <div class="bds-qty">
+            <button type="button" class="bds-qty__btn" data-bds-qty="-1" aria-label="Decrease quantity">&minus;</button>
+            <input
+              class="bds-qty__input"
+              type="number"
+              name="quantity"
+              min="1"
+              value="1"
+              form="{{ product_form_id }}"
+              aria-label="Quantity"
+              data-bds-qty-input
+            >
+            <button type="button" class="bds-qty__btn" data-bds-qty="1" aria-label="Increase quantity">+</button>
+          </div>
+          <div class="bds-summary__amount">
+            <span>Total</span>
+            <strong data-bds-total>{{ initial.price | money }}</strong>
+          </div>
+        </div>
+
+        <product-form class="product-form bds-form" data-section-id="{{ section.id }}">
+          <div class="product-form__error-message-wrapper bds-inline-note bds-inline-note--error" role="alert" hidden>
+            <span class="product-form__error-message"></span>
+          </div>
+          {%- form 'product', product, id: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+            <input type="hidden" name="id" value="{{ initial.id }}" class="product-variant-id">
+            <input
+              type="hidden"
+              name="properties[Artwork status]"
+              value="Customer will send after checkout"
+              data-bds-artwork-status
+              disabled
+            >
+            <button
+              id="ProductSubmitButton-{{ section.id }}"
+              type="submit"
+              name="add"
+              class="product-form__submit bds-btn bds-btn--primary"
+              {% unless initial.available %}
+                disabled
+              {% endunless %}
+            >
+              <span>
+                {%- if initial.available -%}
+                  {{ 'products.product.add_to_cart' | t }}
+                {%- else -%}
+                  {{ 'products.product.sold_out' | t }}
+                {%- endif -%}
+              </span>
+              {%- render 'loading-spinner' -%}
+            </button>
+          {%- endform -%}
+        </product-form>
+
+        <ul class="bds-trust" role="list">
+          {%- if section.settings.trust_1 != blank -%}
+            <li>{% render 'bds-icon', icon: 'shield' %}{{ section.settings.trust_1 }}</li>
+          {%- endif -%}
+          {%- if section.settings.trust_2 != blank -%}
+            <li>{% render 'bds-icon', icon: 'truck' %}{{ section.settings.trust_2 }}</li>
+          {%- endif -%}
+          {%- if section.settings.trust_3 != blank -%}
+            <li>{% render 'bds-icon', icon: 'refresh' %}{{ section.settings.trust_3 }}</li>
+          {%- endif -%}
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  {%- comment -%} Assisted-sales modals {%- endcomment -%}
+  {%- assign quote_form_id = 'BdsQuoteForm-' | append: section.id -%}
+  <dialog class="bds-modal" data-bds-modal="quote" aria-labelledby="bds-quote-title-{{ section.id }}">
+    <button type="button" class="bds-modal__close" data-bds-close aria-label="{{ 'accessibility.close' | t }}">
+      {% render 'bds-icon', icon: 'close' %}
+    </button>
+    {%- form 'contact', id: quote_form_id, class: 'bds-modal__form', data-bds-lead-form: 'quote' -%}
+      <div class="bds-modal__body" data-bds-form-body>
+        <p class="bds-modal__eyebrow">Custom size</p>
+        <h2 class="bds-modal__title" id="bds-quote-title-{{ section.id }}">Request a custom size quote</h2>
+        <p class="bds-modal__intro">
+          Tell us the space you need to fill. Our team replies with a price in {{ section.settings.quote_time }}.
+        </p>
+        <input type="hidden" name="contact[Request type]" value="Custom size quote">
+        <input type="hidden" name="contact[Product]" value="{{ product.title | escape }}">
+        <input type="hidden" name="contact[Current selection]" value="" data-bds-selection-field>
+        <div class="bds-field-row">
+          <div class="bds-field">
+            <label for="{{ quote_form_id }}-width">Width <span>(ft)</span></label>
+            <input id="{{ quote_form_id }}-width" type="number" step="0.1" min="1" name="contact[Width (ft)]" required>
+          </div>
+          <div class="bds-field">
+            <label for="{{ quote_form_id }}-height">Height <span>(ft)</span></label>
+            <input id="{{ quote_form_id }}-height" type="number" step="0.1" min="1" name="contact[Height (ft)]" required>
+          </div>
+        </div>
+        <div class="bds-field">
+          <label for="{{ quote_form_id }}-name">Full name</label>
+          <input id="{{ quote_form_id }}-name" type="text" name="contact[name]" autocomplete="name" required>
+        </div>
+        <div class="bds-field-row">
+          <div class="bds-field">
+            <label for="{{ quote_form_id }}-email">Email</label>
+            <input id="{{ quote_form_id }}-email" type="email" name="contact[email]" autocomplete="email" required>
+          </div>
+          <div class="bds-field">
+            <label for="{{ quote_form_id }}-phone">Phone <span>(optional)</span></label>
+            <input id="{{ quote_form_id }}-phone" type="tel" name="contact[phone]" autocomplete="tel">
+          </div>
+        </div>
+        <div class="bds-field">
+          <label for="{{ quote_form_id }}-body">Anything else? <span>(optional)</span></label>
+          <textarea id="{{ quote_form_id }}-body" name="contact[body]" rows="3" placeholder="Event date, printing preference, quantity…"></textarea>
+        </div>
+        {%- if form.errors -%}
+          <div class="bds-inline-note bds-inline-note--error">{{ form.errors | default_errors }}</div>
+        {%- endif -%}
+        <p class="bds-inline-note bds-inline-note--error" data-bds-form-error hidden></p>
+        <button type="submit" class="bds-btn bds-btn--primary">Get my free quote</button>
+      </div>
+      <div class="bds-modal__success" data-bds-form-success {% unless form.posted_successfully? %}hidden{% endunless %}>
+        {% render 'bds-icon', icon: 'check-circle' %}
+        <h2 class="bds-modal__title">Request received</h2>
+        <p>Thanks! Our team will get back to you with a custom quote in {{ section.settings.quote_time }}.</p>
+        <button type="button" class="bds-btn bds-btn--secondary" data-bds-close>Back to product</button>
+      </div>
+    {%- endform -%}
+  </dialog>
+
+  {%- assign design_form_id = 'BdsDesignForm-' | append: section.id -%}
+  <dialog class="bds-modal" data-bds-modal="design" aria-labelledby="bds-design-title-{{ section.id }}">
+    <button type="button" class="bds-modal__close" data-bds-close aria-label="{{ 'accessibility.close' | t }}">
+      {% render 'bds-icon', icon: 'close' %}
+    </button>
+    {%- form 'contact', id: design_form_id, class: 'bds-modal__form', data-bds-lead-form: 'design' -%}
+      <div class="bds-modal__body" data-bds-form-body>
+        <p class="bds-modal__eyebrow">Free service</p>
+        <h2 class="bds-modal__title" id="bds-design-title-{{ section.id }}">Request a free 2D design review</h2>
+        <p class="bds-modal__intro">
+          Share your details and ideas. We reply in {{ section.settings.design_reply_time }} and send a 2D mock-up within
+          {{ section.settings.design_mockup_time }} &mdash; no obligation.
+        </p>
+        <input type="hidden" name="contact[Request type]" value="Free 2D design review">
+        <input type="hidden" name="contact[Product]" value="{{ product.title | escape }}">
+        <input type="hidden" name="contact[Current selection]" value="" data-bds-selection-field>
+        <div class="bds-field">
+          <label for="{{ design_form_id }}-name">Full name</label>
+          <input id="{{ design_form_id }}-name" type="text" name="contact[name]" autocomplete="name" required>
+        </div>
+        <div class="bds-field-row">
+          <div class="bds-field">
+            <label for="{{ design_form_id }}-email">Email</label>
+            <input id="{{ design_form_id }}-email" type="email" name="contact[email]" autocomplete="email" required>
+          </div>
+          <div class="bds-field">
+            <label for="{{ design_form_id }}-phone">Phone <span>(optional)</span></label>
+            <input id="{{ design_form_id }}-phone" type="tel" name="contact[phone]" autocomplete="tel">
+          </div>
+        </div>
+        <div class="bds-field">
+          <label for="{{ design_form_id }}-body">What should the design include?</label>
+          <textarea
+            id="{{ design_form_id }}-body"
+            name="contact[body]"
+            rows="4"
+            placeholder="Brand name, logo link, colours, text, event…"
+            required
+          ></textarea>
+        </div>
+        {%- if form.errors -%}
+          <div class="bds-inline-note bds-inline-note--error">{{ form.errors | default_errors }}</div>
+        {%- endif -%}
+        <p class="bds-inline-note bds-inline-note--error" data-bds-form-error hidden></p>
+        <button type="submit" class="bds-btn bds-btn--primary">Request my free design review</button>
+      </div>
+      <div class="bds-modal__success" data-bds-form-success {% unless form.posted_successfully? %}hidden{% endunless %}>
+        {% render 'bds-icon', icon: 'check-circle' %}
+        <h2 class="bds-modal__title">Request received</h2>
+        <p>
+          Thanks! A designer will contact you in {{ section.settings.design_reply_time }}, and your 2D mock-up will
+          arrive within {{ section.settings.design_mockup_time }}.
+        </p>
+        <button type="button" class="bds-btn bds-btn--secondary" data-bds-close>Back to product</button>
+      </div>
+    {%- endform -%}
+  </dialog>
+
+  <script type="application/json" data-bds-data>
+    {
+      "variants": [
+        {%- for v in product.variants -%}
+          {
+            "id": {{ v.id }},
+            "price": {{ v.price }},
+            "available": {{ v.available }},
+            "options": [{{ v.option1 | json }}, {{ v.option2 | json }}, {{ v.option3 | json }}],
+            "mediaId": {{ v.featured_media.id | default: 'null' }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ],
+      "options": [
+        [{%- for value in size_values -%}{{ value.name | json }}{% unless forloop.last %},{% endunless %}{%- endfor -%}],
+        [{%- for value in print_values -%}{{ value.name | json }}{% unless forloop.last %},{% endunless %}{%- endfor -%}],
+        [{%- for value in frame_values -%}{{ value.name | json }}{% unless forloop.last %},{% endunless %}{%- endfor -%}]
+      ]
+    }
+  </script>
+</bds-configurator>
+
+<script type="application/ld+json">
+  {{ product | structured_data }}
+</script>
+
+{% schema %}
+{
+  "name": "Backdrop configurator",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "header", "content": "Header" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Tension Media Wall" },
+    { "type": "text", "id": "price_note", "label": "Price note", "default": "Free shipping · price updates as you choose" },
+    {
+      "type": "richtext",
+      "id": "highlights",
+      "label": "Highlights",
+      "default": "<ul><li>Tool-free aluminum frame, sets up in minutes</li><li>Wrinkle-resistant, washable, fire-retardant fabric</li><li>Seamless dye-sublimation print, edge to edge</li></ul>"
+    },
+    { "type": "header", "content": "Size step" },
+    { "type": "range", "id": "popular_size", "label": "Most popular size (position)", "min": 1, "max": 6, "step": 1, "default": 3 },
+    {
+      "type": "text",
+      "id": "size_help",
+      "label": "Size help text",
+      "default": "Every wall is 7.5 ft tall. Pick the width that fits your booth or space."
+    },
+    {
+      "type": "text",
+      "id": "size_hints",
+      "label": "Size hints",
+      "info": "One per size, separated by |",
+      "default": "Tabletop & small spaces|8 ft booths|10 ft booths|Photo walls & stages|Large booths|20 ft booths"
+    },
+    { "type": "text", "id": "quote_time", "label": "Custom quote reply time", "default": "1–2 hours" },
+    { "type": "header", "content": "Printing options" },
+    { "type": "text", "id": "print_1_title", "label": "Option 1 title", "default": "Single-sided" },
+    { "type": "text", "id": "print_1_text", "label": "Option 1 text", "default": "Graphic on the front. Best against a wall." },
+    { "type": "text", "id": "print_2_title", "label": "Option 2 title", "default": "Double-sided" },
+    { "type": "text", "id": "print_2_text", "label": "Option 2 text", "default": "Graphic on both sides. Best for open spaces." },
+    { "type": "text", "id": "print_3_title", "label": "Option 3 title", "default": "Frame only" },
+    { "type": "text", "id": "print_3_text", "label": "Option 3 text", "default": "Aluminum frame and bases, no fabric." },
+    { "type": "header", "content": "Frame options" },
+    { "type": "text", "id": "frame_1_title", "label": "Option 1 title", "default": "Include aluminum frame" },
+    { "type": "text", "id": "frame_1_text", "label": "Option 1 text", "default": "Complete kit, ready to set up." },
+    { "type": "text", "id": "frame_2_title", "label": "Option 2 title", "default": "Print only, no frame" },
+    { "type": "text", "id": "frame_2_text", "label": "Option 2 text", "default": "Replacement fabric for a frame you own." },
+    { "type": "header", "content": "Artwork" },
+    { "type": "text", "id": "design_reply_time", "label": "Design review reply time", "default": "about 2 hours" },
+    { "type": "text", "id": "design_mockup_time", "label": "Mock-up time", "default": "24 hours" },
+    { "type": "header", "content": "Summary" },
+    {
+      "type": "text",
+      "id": "production_text",
+      "label": "Production text",
+      "default": "Printed within 24 business hours of artwork approval"
+    },
+    {
+      "type": "text",
+      "id": "delivery_text",
+      "label": "Delivery text",
+      "default": "Free delivery in 5–7 business days across the US"
+    },
+    { "type": "text", "id": "trust_1", "label": "Trust item 1", "default": "1-year warranty" },
+    { "type": "text", "id": "trust_2", "label": "Trust item 2", "default": "Free shipping" },
+    { "type": "text", "id": "trust_3", "label": "Trust item 3", "default": "Print it right or we reprint" },
+    { "type": "header", "content": "Section padding" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 32 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 48 }
+  ]
+}
+{% endschema %}
