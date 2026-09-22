@@ -172,7 +172,7 @@
 }
 
 /* ---------- Steps ---------- */
-.bds-step {
+.bds-config .bds-step {
   padding: 22px 0;
   border-top: 1px solid var(--bds-border);
 }
@@ -227,7 +227,7 @@
   transform: rotate(-45deg);
 }
 
-.bds-step__help {
+.bds-config .bds-step__help {
   color: var(--bds-muted);
   margin: 0 0 14px 40px;
   font-size: 13px;
@@ -910,4 +910,27 @@
 
 .bds-modal__success p {
   margin-bottom: 18px !important;
+}
+
+/* Three-up option cards: stack price under the title so labels don't wrap */
+@media screen and (min-width: 750px) {
+  .bds-options--3 .bds-card__row {
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .bds-options--2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* The review card repeats every choice, so keep step headers short on phones */
+  .bds-step__value {
+    display: none;
+  }
+
+  .bds-config .bds-step__help {
+    margin-left: 0;
+  }
 }
