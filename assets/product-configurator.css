@@ -10,8 +10,8 @@
   --bds-border: #e6e6e6;
   --bds-border-strong: #c9c9c9;
   --bds-soft: #f7f7f9;
-  --bds-tint: #f3f4ff;
-  --bds-radius-card: 10px;
+  --bds-hover: #f5f5f5;
+  --bds-radius-card: 12px;
   --bds-radius-button: 14px;
   --bds-radius-input: 4px;
 
@@ -121,7 +121,7 @@
 }
 
 .bds-config .bds-head__title {
-  font-size: 30px;
+  font-size: 32px;
   line-height: 1.2;
   font-weight: 700;
   color: var(--bds-heading);
@@ -136,7 +136,7 @@
 }
 
 .bds-head__price-value {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--bds-heading);
 }
@@ -199,7 +199,7 @@
 }
 
 .bds-config .bds-step__title {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--bds-heading);
   line-height: 1.3;
@@ -248,7 +248,7 @@
 .bds-sizes,
 .bds-options {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .bds-sizes {
@@ -284,7 +284,7 @@
 }
 
 .bds-card:hover {
-  border-color: var(--bds-border-strong);
+  background: var(--bds-hover);
 }
 
 .bds-card__input {
@@ -298,7 +298,7 @@
 .bds-card:has(.bds-card__input:checked) {
   border-color: var(--bds-heading);
   box-shadow: inset 0 0 0 1px var(--bds-heading);
-  background: var(--bds-tint);
+  background: #fff;
 }
 
 .bds-card:has(.bds-card__input:focus-visible) {
@@ -335,7 +335,7 @@
 .bds-card__meta,
 .bds-card__hint,
 .bds-card__text {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--bds-muted);
   line-height: 1.4;
 }
@@ -406,7 +406,7 @@
 }
 
 .bds-assist:hover {
-  border-color: var(--bds-border-strong);
+  background: var(--bds-hover);
 }
 
 .bds-assist strong {
@@ -438,8 +438,8 @@
   display: flex;
   gap: 8px;
   align-items: flex-start;
-  margin-top: 10px !important;
-  font-size: 12px;
+  margin-top: 12px !important;
+  font-size: 13px;
   color: var(--bds-muted);
 }
 
@@ -452,6 +452,7 @@
   color: var(--bds-accent);
 }
 
+.bds-sticky[hidden],
 .bds-inline-note[hidden],
 .bds-config [hidden] {
   display: none !important;
@@ -459,7 +460,7 @@
 
 .bds-note {
   margin-top: 10px !important;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--bds-muted);
 }
 
@@ -486,7 +487,7 @@
 .bds-drop:hover,
 .bds-drop.is-dragging {
   border-color: var(--bds-primary);
-  background: var(--bds-tint);
+  background: var(--bds-hover);
 }
 
 .bds-drop__input {
@@ -695,9 +696,9 @@
 
 .bds-summary__meta {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   margin: 16px 0 0;
-  padding: 14px 0 0;
+  padding: 16px 0 0;
   border-top: 1px solid var(--bds-border);
   list-style: none;
   font-size: 13px;
@@ -780,10 +781,10 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px 18px;
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   padding: 0;
   list-style: none;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--bds-muted);
 }
 
@@ -805,7 +806,7 @@
   max-height: calc(100vh - 32px);
   padding: 28px;
   border: 0;
-  border-radius: 16px;
+  border-radius: 14px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
   font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px;
@@ -933,4 +934,74 @@
   .bds-config .bds-step__help {
     margin-left: 0;
   }
+}
+
+/* ---------- Sticky add to cart ---------- */
+/* Slim bar + reserved scroll space: content must never sit trapped under it */
+.bds-config {
+  scroll-padding-bottom: 96px;
+}
+
+.bds-sticky {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  padding: 10px 0;
+  background: #fff;
+  border-top: 1px solid var(--bds-border);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.bds-sticky__inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bds-sticky__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: var(--bds-muted);
+}
+
+.bds-sticky__text strong {
+  color: var(--bds-heading);
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bds-sticky__price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--bds-heading);
+  white-space: nowrap;
+}
+
+.bds-sticky__btn {
+  width: auto;
+  min-height: 44px;
+  font-size: 15px;
+  flex: none;
+}
+
+@media screen and (max-width: 749px) {
+  .bds-sticky__text {
+    display: none;
+  }
+
+  .bds-sticky__btn {
+    flex: 1;
+  }
+}
+
+/* Keep the final step clear of the sticky bar */
+.bds-config .bds-summary {
+  margin-bottom: 88px;
 }

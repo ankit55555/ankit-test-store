@@ -290,7 +290,7 @@
                 <span class="bds-card__title">{% render 'bds-icon', icon: 'brush' %} I need design help</span>
                 <span class="bds-card__tag">Free</span>
               </span>
-              <span class="bds-card__text">Our designers create a 2D mock-up for you.</span>
+              <span class="bds-card__text">Request a free 2D design review — our designers build your mock-up.</span>
             </label>
           </div>
 
@@ -440,6 +440,20 @@
           {%- endif -%}
         </ul>
       </section>
+    </div>
+  </div>
+
+  {%- comment -%} Sticky bar: keeps Add to cart reachable while configuring {%- endcomment -%}
+  <div class="bds-sticky" data-bds-sticky hidden>
+    <div class="page-width bds-sticky__inner">
+      <span class="bds-sticky__text">
+        <strong>{{ product.title | escape }}</strong>
+        <span data-bds-summary="sticky"></span>
+      </span>
+      <span class="bds-sticky__price" data-bds-total>{{ initial.price | money }}</span>
+      <button type="button" class="bds-btn bds-btn--primary bds-sticky__btn" data-bds-sticky-add>
+        {{ 'products.product.add_to_cart' | t }}
+      </button>
     </div>
   </div>
 

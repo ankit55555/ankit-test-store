@@ -34,6 +34,7 @@ if (!customElements.get('bds-configurator')) {
         this.form.addEventListener('submit', this.beforeAddToCart.bind(this), true);
         this.setupDropzone();
         this.setupLeadForms();
+        this.setupStickyBar();
 
         this.render();
         this.openModalFromUrl();
@@ -142,6 +143,7 @@ if (!customElements.get('bds-configurator')) {
         this.setText('[data-bds-summary="print"]', printLabel);
         this.setText('[data-bds-summary="frame"]', frameLabel);
         this.setText('[data-bds-summary="artwork"]', artwork);
+        this.setText('[data-bds-summary="sticky"]', `${sizeLabel} · ${printLabel}`);
 
         const selection = `${sizeLabel} / ${printLabel} / ${frameLabel}`;
         this.querySelectorAll('[data-bds-selection-field]').forEach((field) => (field.value = selection));
@@ -305,6 +307,21 @@ if (!customElements.get('bds-configurator')) {
           this.fileInput.disabled = false;
           this.artworkStatus.disabled = true;
         });
+      }
+
+      /* ---------- Sticky add to cart ---------- */
+
+      setupStickyBar() {
+        const bar = this.querySelector('[data-bds-sticky]');
+        if (!bar || !('IntersectionObserver' in window)) return;
+
+        this.querySelector('[data-bds-sticky-add]').addEventListener('click', () => this.submitButton.click());
+        new IntersectionObserver(
+          ([entry]) => {
+            bar.hidden = entry.isIntersecting;
+          },
+          { threshold: 0 }
+        ).observe(this.submitButton);
       }
 
       /* ---------- Lead forms ---------- */
