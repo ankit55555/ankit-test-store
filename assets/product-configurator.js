@@ -228,12 +228,26 @@ if (!customElements.get('bds-configurator')) {
         dialog.querySelector('input:not([type="hidden"]), textarea')?.focus();
       }
 
+      // Shopify posts contact forms as a normal navigation and answers back at the form's
+      // anchor, so reopen that modal and show its result. Both forms report
+      // posted_successfully, so only the form named in the anchor keeps its success state.
       openModalFromUrl() {
-        // After a non-JS (native) contact form post, reopen the modal that was submitted.
-        const params = new URLSearchParams(window.location.search);
-        if (!params.has('contact_posted') && !window.location.hash.startsWith('#BdsQuote') && !window.location.hash.startsWith('#BdsDesign')) return;
-        const name = window.location.hash.startsWith('#BdsDesign') ? 'design' : 'quote';
-        this.openModal(name);
+        const posted = new URLSearchParams(window.location.search).has('contact_posted');
+        const anchor = window.location.hash.slice(1);
+
+        this.querySelectorAll('[data-bds-lead-form]').forEach((form) => {
+          const isTarget = posted && form.id === anchor;
+          const success = form.querySelector('[data-bds-form-success]');
+          if (!isTarget) success.hidden = true;
+          if (!isTarget) return;
+          form.querySelector('[data-bds-form-body]').hidden = true;
+          success.hidden = false;
+          this.openModal(form.dataset.bdsLeadForm);
+        });
+
+        // A failed post re-renders the page with form.errors, so show that form again.
+        const withErrors = this.querySelector('[data-bds-lead-form]:has(.bds-inline-note--error:not([hidden]))');
+        if (!posted && withErrors && anchor === withErrors.id) this.openModal(withErrors.dataset.bdsLeadForm);
       }
 
       /* ---------- Artwork upload ---------- */
@@ -301,34 +315,16 @@ if (!customElements.get('bds-configurator')) {
         });
       }
 
-      async submitLeadForm(event, form) {
+      // Validate here, then let the browser post normally: Shopify's bot protection
+      // rejects a background fetch to /contact with a 403 challenge page.
+      submitLeadForm(event, form) {
         if (!form.checkValidity()) {
           event.preventDefault();
           form.reportValidity();
           return;
         }
-        event.preventDefault();
-
-        const button = form.querySelector('[type="submit"]');
-        const error = form.querySelector('[data-bds-form-error]');
-        button.disabled = true;
-        error.hidden = true;
-
-        try {
-          const response = await fetch(form.action, { method: 'POST', body: new FormData(form) });
-          // Shopify may require a captcha challenge; fall back to a native submit so it can be shown.
-          if (response.url.includes('/challenge')) return form.submit();
-          if (!response.ok || !response.url.includes('contact_posted=true')) throw new Error('not posted');
-
-          form.querySelector('[data-bds-form-body]').hidden = true;
-          form.querySelector('[data-bds-form-success]').hidden = false;
-          form.reset();
-        } catch (e) {
-          error.textContent = 'Something went wrong. Please try again, or email us and we’ll help right away.';
-          error.hidden = false;
-        } finally {
-          button.disabled = false;
-        }
+        // Shopify's spam protection re-submits the form itself, so leave the button alone.
+        form.classList.add('is-submitting');
       }
 
       /* ---------- Money ---------- */

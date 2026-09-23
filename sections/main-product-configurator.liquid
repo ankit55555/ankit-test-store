@@ -490,7 +490,6 @@
         {%- if form.errors -%}
           <div class="bds-inline-note bds-inline-note--error">{{ form.errors | default_errors }}</div>
         {%- endif -%}
-        <p class="bds-inline-note bds-inline-note--error" data-bds-form-error hidden></p>
         <button type="submit" class="bds-btn bds-btn--primary">Get my free quote</button>
       </div>
       <div class="bds-modal__success" data-bds-form-success {% unless form.posted_successfully? %}hidden{% endunless %}>
@@ -545,7 +544,6 @@
         {%- if form.errors -%}
           <div class="bds-inline-note bds-inline-note--error">{{ form.errors | default_errors }}</div>
         {%- endif -%}
-        <p class="bds-inline-note bds-inline-note--error" data-bds-form-error hidden></p>
         <button type="submit" class="bds-btn bds-btn--primary">Request my free design review</button>
       </div>
       <div class="bds-modal__success" data-bds-form-success {% unless form.posted_successfully? %}hidden{% endunless %}>
